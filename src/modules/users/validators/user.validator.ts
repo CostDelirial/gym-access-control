@@ -3,7 +3,7 @@ import { z } from "zod"
 export const createUserSchema = z.object({
     name: z.string().trim().min(3).max(50),
     email: z.string().trim().email().max(254),
-    password: z.string().min(8).max(72).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"),
+    passwordHash: z.string().min(8).max(72).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"),
     status: z.boolean().optional(),
     role: z.enum(["employee", "admin", "user"]).optional()
 })
@@ -11,7 +11,7 @@ export const createUserSchema = z.object({
 export const updateUserSchema = z.object({
     name: z.string().trim().min(3).max(50).optional(),
     email: z.string().trim().email().max(254).optional(),
-    password: z.string().min(8).max(72).optional(),
+    passwordHash: z.string().min(8).max(72).optional(),
     status: z.boolean().optional(),
     role: z.enum(["employee", "admin", "user"]).optional()
 }).strict().refine(
