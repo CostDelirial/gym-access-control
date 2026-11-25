@@ -2,19 +2,13 @@ import app from "./index";
 import { env } from "./conifg/env"
 import { connectDatabase, disconnectDatabase } from "./conifg/database"
 import { logger } from "./sahred/utils/logger"
-
 const bootstrap = async ():Promise<void> => {
   try{
     //conectar MongoDB
     await connectDatabase()
-
     //iniciar express
     const server = app.listen(env.PORT, () => {
-      logger.info({
-        port: env.PORT,
-        environment: env.NODE_ENV
-      },
-      "Server started successfully"
+      logger.info({ port: env.PORT,environment: env.NODE_ENV},`servidor escuchando en puerto: ${env.PORT}`
       )
     })
     //apagar servidor
@@ -55,4 +49,4 @@ const bootstrap = async ():Promise<void> => {
   }
 }
 
-void bootstrap
+void bootstrap()

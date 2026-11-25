@@ -17,7 +17,10 @@ const envSchema = z.object({
             value.startsWith("mongodb://") ||
             value.startsWith("mongodb+srv://"),
             "Conecion no valida paar MongoDB" 
-    )
+    ),
+
+    JWT_ACCESS_SECRET: z.string().min(32),
+    JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

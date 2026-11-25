@@ -5,6 +5,8 @@ import { logger } from "../sahred/utils/logger"
 
 export const connectDatabase = async ():Promise<void> => {
     try{
+
+        logger.info("empezando al conexion")
         await mongoose.connect(env.MONGO_URI, {serverSelectionTimeoutMS: 5000,})
         logger.info({
             database: mongoose.connection.name,

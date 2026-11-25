@@ -1,7 +1,8 @@
 import { Router } from "express";
-import mongoose, { mongo } from "mongoose"
+import mongoose from "mongoose"
 
 import userRoutes from "../modules/users/routes/user.routes"
+import authRoutes from "../modules/auth/routes/auth.routes"
 
 const router = Router()
 
@@ -33,5 +34,6 @@ router.get("/health/ready", (_req, res) => {
 
 
 router.use("/users", userRoutes)
+router.use("/auth", authRoutes)
 
 export default router;

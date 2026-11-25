@@ -7,7 +7,7 @@ import { DataHasher } from '../../../sahred/utils/hasher'
 
 class UserService {
 /////////////////////////////////////////////////////////////////
-    async createUser(data: Pick<IUser,"name" | "email" | "passwordHash">){
+    async createUser(data: Pick<IUser,"name" | "email" | "password">){
         const email = data.email.toLowerCase()
 
         const existingUser = await userRepository.findByEmail(email)
@@ -15,11 +15,11 @@ class UserService {
         if(existingUser){
             throw Object.assign(new Error("El correo electrónico ya está en uso"),{status: 409})
         }
-        const hashedPassword = await DataHasher.hashPassword(data.passwordHash)
+        const hashedPassword = await DataHasher.hashPassword(data.password)
         const newUser = await userRepository.create({
             name: data.name,
             email,
-            passwordHash: hashedPassword
+            password: hashedPassword
         })
         return this.toSafeUser(newUser.toObject())
     }
@@ -28,7 +28,7 @@ class UserService {
         return userRepository.findAll()
     }
 ////////////////////////////////////////////////////////////////
-    async updateUser(id: string, data: Partial<Pick<IUser,"name" | "email" | "passwordHash" | "status" | "role">>){
+    async updateUser(id: string, data: Partial<Pick<IUser,"name" | "email" | "password" | "status" | "role">>){
         const user = await userRepository.findById(id)
         if(!user){
             throw Object.assign(new Error("El usario no existe"),{status: 404})
@@ -40,8 +40,8 @@ class UserService {
             }
             data.email = data.email?.toLowerCase()
         }
-        if(data.passwordHash){
-            data.passwordHash = await DataHasher.hashPassword(data.passwordHash)
+        if(data.password){
+            data.password = await DataHasher.hashPassword(data.password)
         }
         const updatedUser = await userRepository.updateById(id, data)
         if(!updatedUser){
@@ -59,7 +59,7 @@ class UserService {
     }
 ////////////////////////////////////////////////////////////////////////////
     private toSafeUser(user: IUser){
-        const {passwordHash, ...safeUser} = user
+        const {password, ...safeUser} = user
         return safeUser
     }
 }
