@@ -11,7 +11,7 @@ class UserRepository {
     }
 
     async findByEmail(email: string ){
-        return UserModel.findOne({email}).lean()
+        return UserModel.findOne({email}).select("+password").lean()
     }
     
     async create(data: Pick<IUser,"name" | "email" | "password">){

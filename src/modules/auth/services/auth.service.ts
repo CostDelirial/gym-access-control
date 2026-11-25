@@ -41,16 +41,14 @@ class AuthService {
         const email = input.email.toLowerCase()
 
         const user = await userRepository.findByEmail(email)
-console.log("----------",user)
         if(!user || !user.status){
             throw Object.assign(new Error("Usuario o password incorrectos"), {
                 status: 401,
             })
         }
 
-        console.info("antes de validar hash", user.password)
+        
     const passwordisValid = await DataHasher.comparePassword(input.password, user.password)
-        console.info("despues de validar hash",passwordisValid)
     if(!passwordisValid){
         throw Object.assign(new Error("Usuario o contraseña incorrectos"), { status: 401 }) 
     }

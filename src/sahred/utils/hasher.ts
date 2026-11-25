@@ -4,6 +4,7 @@ export class DataHasher {
   private static readonly SALT_ROUNDS = 10
 
   static async hashPassword(plainPassword: string): Promise<string> {
+   
     if (!plainPassword || plainPassword.trim().length === 0) {
       throw new Error("La contraseña es requerida")
     }
@@ -14,6 +15,7 @@ export class DataHasher {
   }
 
   static async comparePassword(plainPassword: string, storedHash: string): Promise<boolean> {
+
     if (!plainPassword || !storedHash) return false
     try {
       return await bcrypt.compare(plainPassword, storedHash)
