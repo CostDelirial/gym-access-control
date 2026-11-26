@@ -1,6 +1,7 @@
 import  { userRepository } from '../repositories/user.repository'
 import { IUser } from "../interfaces/user.interface"
 import { DataHasher } from '../../../sahred/utils/hasher'
+import { AppError } from '../../../sahred/errors/app-error'
 
 
 
@@ -10,10 +11,7 @@ class UserService {
 async getMyProfile(userId: string) {
     const user = await userRepository.findById(userId)
     if(!user){
-        throw Object.assign(new Error("El usuario no nse encuentra"), {
-            success: false,
-            status: 404
-        })
+        throw new AppError("Usuario no encontrado", 404)
     }
     return user
 }
@@ -29,7 +27,7 @@ async updateMyProfile (userId: string, data:{ name?: string, email?: string, pas
         const existingUser = await userRepository.findByEmail(email)
         
         if(existingUser){
-            throw Object.assign(new Error("El correo electrónico ya está en uso"),{status: 409})
+            throw new AppError("El correo electronico ya esta en uso", 409)
         }
         const hashedPassword = await DataHasher.hashPassword(data.password)
         const newUser = await userRepository.create({
@@ -47,12 +45,12 @@ async updateMyProfile (userId: string, data:{ name?: string, email?: string, pas
     async updateUser(id: string, data: Partial<Pick<IUser,"name" | "email" | "password" | "status" | "role">>){
         const user = await userRepository.findById(id)
         if(!user){
-            throw Object.assign(new Error("El usario no existe"),{status: 404})
+            throw new AppError("El usuario no existe",404)
         }
         if(data.email){
           const existingUser = await userRepository.findByEmail(data.email.toLowerCase())
             if( existingUser && existingUser._id.toString() !== id){
-                throw Object.assign(new Error("EL correo ya esta registrado"), {status: 409})
+                throw new AppError("El correo ya esta registrado",409)
             }
             data.email = data.email?.toLowerCase()
         }
@@ -61,7 +59,7 @@ async updateMyProfile (userId: string, data:{ name?: string, email?: string, pas
         }
         const updatedUser = await userRepository.updateById(id, data)
         if(!updatedUser){
-            throw Object.assign(new Error("El usuario no existe"),{status: 404})
+            throw new AppError("El usuario no existe",404)
         }
         return updatedUser
     }
@@ -69,7 +67,7 @@ async updateMyProfile (userId: string, data:{ name?: string, email?: string, pas
     async getUserById(id: string){
         const user = await userRepository.findById(id)
         if(!user){
-            throw Object.assign(new Error("Usuario no encontrado"),{status: 404})
+            throw new AppError("El usuario no existe",404)
         }
         return user
     }
