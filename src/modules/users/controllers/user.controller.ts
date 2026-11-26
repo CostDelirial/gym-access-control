@@ -2,8 +2,39 @@ import { Request, Response, NextFunction } from "express"
 import { userService } from "../services/user.service"
 
 import { createUserSchema, updateUserSchema, userIdSchema} from "../validators/user.validator"
-
+import { AuthenticatedRequest } from "../../auth/interfaces/auth-request.ineterface"
 class UserController {
+
+    //////////////////////////////////////////ME//////////////////////////////
+    async getMyProfile(req: Request, res: Response, next: NextFunction): Promise<void>{
+        try {
+            const authenticatedReq = req as AuthenticatedRequest
+            const user = await userService.getMyProfile(authenticatedReq.user!.id)
+            res.status(200).json({
+                success: true,
+                data: user
+            })
+        } catch(error){
+            next(error)
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////
+    async updateMyProfile(req: Request, res: Response, next: NextFunction):Promise<void> {
+        try {
+            const authenticatedReq = req as AuthenticatedRequest
+            const user = await userService.updateMyProfile(
+                authenticatedReq.user!.id,
+                req.body
+            )
+            res.status(200).json({
+                success: true,
+                data: user,
+            })
+
+        }catch(error){
+            next(error)
+        }
+    }
     /////////////////////////////////////////////////////////////////////////
     createUser = async ( req: Request, res: Response, next: NextFunction) => {
         try {

@@ -1,52 +1,45 @@
-import {ErrorRequestHandler} from "express"
-import { ZodError} from "zod"
+import { Request, Response, NextFunction } from "express"
+import { ZodError } from "zod"
+import mongoose from "mongoose"
+import { AppError } from "../sahred/errors/app-error"
 import { logger } from "../sahred/utils/logger"
-import { env } from "../conifg/env"
 
-
-export const errorMiddleware: ErrorRequestHandler = (
-    err,
-    req,
-    res,
-    next
-) => {
-    if (res.headersSent) {
-        return next(err);
-    }
-    //valid error
-    if(err instanceof ZodError){
-        return res.status(400).json({
-            success: false,
-            message: "Validación error",
-            errors: err.issues.map((issue) => ({
-                field: issue.path.join("."),
-                message: issue.message
-            }))
-        })
+export const errorMiddleware = ( error: unknown, req: Request, res: Response, next: NextFunction):void => {
+    if(res.headersSent){
+        next(error)
+        return
     }
 
-    // duplicate Key
-    if(err.code === 11000) {
-        return res.status(409).json({
-            success: false,
-            message: "Ya existe"
-        })
+    let statusCode = 500
+    let message = "Erro interno del servidor"
+
+    if(error instanceof AppError) {
+        statusCode = error.statusCode
+        message: error.message
+    } else if (error instanceof ZodError){
+        statusCode = 400
+        message = "error de validación"
+    }else if(error instanceof mongoose.Error.CastError){
+        statusCode = 400
+        message = "Identificacion no valida"
+    } else if(error instanceof mongoose.Error.ValidationError) {
+        statusCode = 400
+        message = "Erro de validacion en base de datos" 
+    } else if (typeof error === "object" && error !== null && "code" in error && error.code === 11000) {
+        statusCode = 409
+        message = "revise que en realidad exista" 
     }
-
-
-    const statusCode = typeof err.status === "number" && err.status >= 400 && err.status <= 599 ? err.status : 500
 
     logger.error({
-        err,
+        err: error,
         method: req.method,
-        path: req.originalUrl
-    }, "Request error")
-
-    return res.status(statusCode).json({
+        path: req.originalUrl,
+        statusCode
+    },
+    "error en la petición"
+    )
+    res.status(statusCode).json({
         success: false,
-        message:
-            statusCode >= 500 ? "" : err.message,
-            ...(env.NODE_ENV === "development" && statusCode >= 500 ? {detail: err.message } : {})
+        message
     })
-
-};
+}

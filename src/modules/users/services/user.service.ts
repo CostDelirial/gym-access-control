@@ -6,6 +6,22 @@ import { DataHasher } from '../../../sahred/utils/hasher'
 
 
 class UserService {
+///////////////////////////////ME/////////////////////////////////
+async getMyProfile(userId: string) {
+    const user = await userRepository.findById(userId)
+    if(!user){
+        throw Object.assign(new Error("El usuario no nse encuentra"), {
+            success: false,
+            status: 404
+        })
+    }
+    return user
+}
+/////////////////////////////////////////////////////////////////
+async updateMyProfile (userId: string, data:{ name?: string, email?: string, password?: string}){
+    return this.updateUser(userId, data)
+}
+////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
     async createUser(data: Pick<IUser,"name" | "email" | "password">){
         const email = data.email.toLowerCase()

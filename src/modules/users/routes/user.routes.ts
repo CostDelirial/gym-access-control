@@ -8,6 +8,11 @@ import { authorize } from "../../../middlewares/authorize.middleware"
 const router = Router()
 
 router.use(authenticate)
+
+/////////////////////////////////ME///////////////////////////////
+router.get("/me",(req, res, next) => userController.getMyProfile(req,res,next))
+router.patch("/me",(req,res,next)=> userController.updateMyProfile(req,res,next))
+//////////////////////////////////////////////////////////////////
 router.get("/", (req,res,next) => userController.getUsers(req,res,next))
 router.get("/:id",authorize("admin"), (req,res,next) => userController.getUserById(req,res,next))
 router.post("/",authorize("admin"), (req,res,next) => userController.createUser(req,res,next))

@@ -1,5 +1,13 @@
 import { z } from "zod"
 
+export const updateMyProfileSchema = z.object({
+    name: z.string().trim().min(2).max(80).optional(),
+    email: z.string().trim().email().max(254).optional(),
+    password: z.string().min(8).max(72).optional()
+})
+.strict()
+.refine( (data) => Object.keys(data).length > 0, {message: "al menos un elemento es requerido"})
+
 export const createUserSchema = z.object({
     name: z.string().trim().min(3).max(50),
     email: z.string().trim().email().max(254),
