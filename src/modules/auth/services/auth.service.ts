@@ -1,11 +1,12 @@
 import jwt, { SignOptions } from "jsonwebtoken"
 
-import { env } from "../../../conifg/env"
+import { env } from "../../../config/env"
 import { userRepository } from "../../users/repositories/user.repository"
 import { userService } from "../../users/services/user.service"
-import { DataHasher } from "../../../sahred/utils/hasher"
+import { DataHasher } from "../../../shared/utils/hasher"
 
 import { AuthResponse, AuthenticatedUser, LoginInput, RegisterInput } from "../interfaces/auth.interface"
+import { AppError } from "../../../shared/errors/app-error"
 
 const createAccessToken = (user: AuthenticatedUser): string => {
     return jwt.sign({ role: user.role }, env.JWT_ACCESS_SECRET, {
@@ -42,15 +43,13 @@ class AuthService {
 
         const user = await userRepository.findByEmail(email)
         if(!user || !user.status){
-            throw Object.assign(new Error("Usuario o password incorrectos"), {
-                status: 401,
-            })
+            throw new AppError("Usuario o password incorrecto",401)
         }
 
         
     const passwordisValid = await DataHasher.comparePassword(input.password, user.password)
     if(!passwordisValid){
-        throw Object.assign(new Error("Usuario o contraseña incorrectos"), { status: 401 }) 
+        throw new AppError("Usuario o password incorrecto", 401)
     }
 
     const authenticatedUser: AuthenticatedUser = {

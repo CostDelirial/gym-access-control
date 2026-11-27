@@ -1,7 +1,7 @@
 import  { userRepository } from '../repositories/user.repository'
 import { IUser } from "../interfaces/user.interface"
-import { DataHasher } from '../../../sahred/utils/hasher'
-import { AppError } from '../../../sahred/errors/app-error'
+import { DataHasher } from '../../../shared/utils/hasher'
+import { AppError } from '../../../shared/errors/app-error'
 
 
 

@@ -2,7 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 
-import { env } from "./conifg/env";
+import { env } from "./config/env";
 import routes from "./routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { notFoundMiddleware } from "./middlewares/not-found.middleware";

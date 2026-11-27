@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction} from "express"
 import jwt, { JwtPayload } from "jsonwebtoken"
 
-import { env } from "../conifg/env"
+import { env } from "../config/env"
 import { AuthenticatedRequest } from "../modules/auth/interfaces/auth-request.ineterface"
 import { UserRole } from "../modules/users/interfaces/user.interface"
 

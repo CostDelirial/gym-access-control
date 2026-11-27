@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express"
 import { ZodError } from "zod"
 import mongoose from "mongoose"
-import { AppError } from "../sahred/errors/app-error"
-import { logger } from "../sahred/utils/logger"
+import { AppError } from "../shared/errors/app-error"
+import { logger } from "../shared/utils/logger"
 
 export const errorMiddleware = ( error: unknown, req: Request, res: Response, next: NextFunction):void => {
     if(res.headersSent){

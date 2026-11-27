@@ -1,7 +1,7 @@
 import app from "./index";
-import { env } from "./conifg/env"
-import { connectDatabase, disconnectDatabase } from "./conifg/database"
-import { logger } from "./sahred/utils/logger"
+import { env } from "./config/env"
+import { connectDatabase, disconnectDatabase } from "./config/database"
+import { logger } from "./shared/utils/logger"
 const bootstrap = async ():Promise<void> => {
   try{
     //conectar MongoDB

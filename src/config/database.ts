@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import { env } from "./env"
-import { logger } from "../sahred/utils/logger"
+import { logger } from "../shared/utils/logger"
 
 
 export const connectDatabase = async ():Promise<void> => {
