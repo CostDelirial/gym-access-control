@@ -1,35 +1,45 @@
-import {ErrorRequestHandler} from "express";
-import { logger } from "../sahred/utils/logger";
-import { env } from "../conifg/env";
+import { Request, Response, NextFunction } from "express"
+import { ZodError } from "zod"
+import mongoose from "mongoose"
+import { AppError } from "../sahred/errors/app-error"
+import { logger } from "../sahred/utils/logger"
 
-
-export const errorMiddleware: ErrorRequestHandler = (
-    err,
-    req,
-    res,
-    next
-) => {
-    if (res.headersSent) {
-        return next(err);
+export const errorMiddleware = ( error: unknown, req: Request, res: Response, next: NextFunction):void => {
+    if(res.headersSent){
+        next(error)
+        return
     }
 
-    const statusCode = 
-     typeof err.status === "number" &&
-     err.status >= 400 &&
-     err.status <= 599
-     ? err.status : 500;
+    let statusCode = 500
+    let message = "Erro interno del servidor"
 
-     logger.error({
-        err, method: req.method,
-        path: req.originalUrl
-     },
-    
-    "Request Error"
-);
-res.status(statusCode).json({
-    success: false,
-    message:
-    statusCode === 500 ? "Internal server Error" : err.message,
-    ...(env?.NODE_ENV === "development" && statusCode === 500 ? { detail: err.message } : {}),
+    if(error instanceof AppError) {
+        statusCode = error.statusCode
+        message: error.message
+    } else if (error instanceof ZodError){
+        statusCode = 400
+        message = "error de validación"
+    }else if(error instanceof mongoose.Error.CastError){
+        statusCode = 400
+        message = "Identificacion no valida"
+    } else if(error instanceof mongoose.Error.ValidationError) {
+        statusCode = 400
+        message = "Erro de validacion en base de datos" 
+    } else if (typeof error === "object" && error !== null && "code" in error && error.code === 11000) {
+        statusCode = 409
+        message = "revise que en realidad exista" 
+    }
+
+    logger.error({
+        err: error,
+        method: req.method,
+        path: req.originalUrl,
+        statusCode
+    },
+    "error en la petición"
+    )
+    res.status(statusCode).json({
+        success: false,
+        message
     })
-};
+}
